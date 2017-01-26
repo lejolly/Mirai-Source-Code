@@ -14,7 +14,7 @@ struct table_value {
 /* Generic bot info */
 #define TABLE_PROCESS_ARGV              1
 #define TABLE_EXEC_SUCCESS              2
-#define TABLE_CNC_DOMAIN                3
+#define TABLE_CNC_IP                    3
 #define TABLE_CNC_PORT                  4
           
 /* Killer data */          
