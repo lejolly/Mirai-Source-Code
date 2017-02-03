@@ -21,7 +21,7 @@
 #include <sys/queue.h>
 #include <sys/epoll.h>
 #include <glob.h>
-
+#include <math.h>
 
 #define TOKEN           "/bin/busybox VDOSS"
 #define TOKEN_VERIFY    "applet not found"
@@ -895,7 +895,7 @@ int load_binary(char *path)
     while ((got = read(fd, &ch, 1)) > 0) size++;
     close(fd);
     
-    binary.num_slices = ceil(size / (float)BYTES_PER_LINE);
+    binary.num_slices = (int) ceil(size / (float)BYTES_PER_LINE);
     binary.slices = calloc(binary.num_slices, sizeof(unsigned char *));
     if (binary.slices == NULL)
         return -1;
