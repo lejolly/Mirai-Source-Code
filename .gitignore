@@ -5,3 +5,6 @@
 .idea
 /cmake-build-debug
 /mirai/release
+/loader/loader.dbg
+/loader/output.txt
+/loader/input.txt

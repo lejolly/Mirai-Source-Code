@@ -22,6 +22,7 @@ struct server *server_create(uint8_t threads, uint8_t addr_len, ipv4_t *addrs, u
     struct server_worker *workers = calloc(threads, sizeof (struct server_worker));
     int i;
 
+    printf("Establishing connections array.\n");
     // Fill out the structure
     srv->bind_addrs_len = addr_len;
     srv->bind_addrs = addrs;
@@ -40,6 +41,7 @@ struct server *server_create(uint8_t threads, uint8_t addr_len, ipv4_t *addrs, u
     }
 
     // Allocate locks internally
+    printf("Allocating locks.\n");
     for (i = 0; i < max_open * 2; i++)
     {
         srv->estab_conns[i] = calloc(1, sizeof (struct connection));
@@ -52,6 +54,7 @@ struct server *server_create(uint8_t threads, uint8_t addr_len, ipv4_t *addrs, u
     }
 
     // Create worker threads
+    printf("Creating worker threads.\n");
     for (i = 0; i < threads; i++)
     {
         struct server_worker *wrker = &srv->workers[i];
@@ -68,6 +71,7 @@ struct server *server_create(uint8_t threads, uint8_t addr_len, ipv4_t *addrs, u
         }
 
         pthread_create(&wrker->thread, NULL, worker, wrker);
+        printf("Created worker thread: %d\n", i);
     }
 
     pthread_create(&srv->to_thrd, NULL, timeout_thread, srv);
