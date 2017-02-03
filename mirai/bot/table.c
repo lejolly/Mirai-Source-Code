@@ -115,6 +115,7 @@ char *table_retrieve_val(int id, int *len)
         printf("[table] Tried to access table.%d but it is locked\n", id);
         return NULL;
     }
+    printf("[table] Retrieved value: %s\n", val->val);
 #endif
 
     if (len != NULL)

