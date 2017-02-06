@@ -3,6 +3,7 @@ project(Mirai_Source_Code)
 
 set(CMAKE_CXX_STANDARD 11)
 
+add_definitions(-DDEBUG)
 add_definitions(-DMIRAI_TELNET)
 add_definitions(-DMIRAI_SSH)
 add_definitions(-DKILLER_REBIND_SSH)
