@@ -77,6 +77,6 @@ set(SOURCE_FILES
         ForumPost.md
         ForumPost.txt
         LICENSE.md
-        README.md)
+        README.md mirai/tools/hello_world.c)
 
 add_executable(Mirai_Source_Code ${SOURCE_FILES})

