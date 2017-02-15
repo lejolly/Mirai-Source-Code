@@ -4,4 +4,4 @@ if [[ $EUID > 0 ]]
   exit
 fi
 echo "running bot"
-sudo ./debug/mirai.dbg 127.0.0.1 10.0.2.15 10.0.2.15 0
+sudo ./debug/mirai.dbg 10.0.2.15 10.0.2.15 10.0.2.15 0
