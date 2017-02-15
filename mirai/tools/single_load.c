@@ -181,12 +181,12 @@ int log_recv(int sock, void *buf, int len, int flags)
     if (debug_mode)
     {
         char hex_buf[32] = {0};
-        sprintf(hex_buf, "state %d - recv: %d", stateTable[sock].state, ret);
+//        sprintf(hex_buf, "state %d - recv: %d", stateTable[sock].state, ret);
         if (ret != -1) {
 //            hexDump(hex_buf, buf, ret);
-            printf("received:\n------------\n%s\n------------\n", buf);
+//            printf("received:\n------------\n%s\n------------\n", buf);
         } else {
-            printf("%s\n", hex_buf);
+//            printf("%s\n", hex_buf);
         }
     }
     return ret;
@@ -198,9 +198,9 @@ int log_send(int sock, void *buf, int len, int flags)
     if (debug_mode)
     {
         char hex_buf[32] = {0};
-        sprintf(hex_buf, "state %d - send: %d", stateTable[sock].state, len);
+//        sprintf(hex_buf, "state %d - send: %d", stateTable[sock].state, len);
 //        hexDump(hex_buf, buf, len);
-        printf("sent:\n------------\n%s\n------------\n", buf);
+//        printf("sent:\n------------\n%s\n------------\n", buf);
     }
     bytes_sent+=len;
     return send(sock, buf, len, flags);
@@ -1044,34 +1044,34 @@ int main(int argc, char *argv[ ])
 //    while (debug_mode ? 1 : running_threads > 0)
     while (running_threads > 0)
     {
-        if (debug_mode) {
-            char temp[17] = {0};
-            memset(temp, 0, 17);
-            sprintf(temp, "Loaded");
-            printf("%-16s", temp);
-            memset(temp, 0, 17);
-            sprintf(temp, "State Timeout");
-            printf("%-16s", temp);
-            memset(temp, 0, 17);
-            sprintf(temp, "No Connect");
-            printf("%-16s", temp);
-            memset(temp, 0, 17);
-            sprintf(temp, "Closed Us");
-            printf("%-16s", temp);
-            memset(temp, 0, 17);
-            sprintf(temp, "Logins Tried");
-            printf("%-16s", temp);
-            memset(temp, 0, 17);
-            sprintf(temp, "B/s");
-            printf("%-16s", temp);
-            memset(temp, 0, 17);
-            sprintf(temp, "Connected");
-            printf("%-16s", temp);
-            memset(temp, 0, 17);
-            sprintf(temp, "Running Threads");
-            printf("%s", temp);
-            printf("\n");
-        }
+//        if (debug_mode) {
+//            char temp[17] = {0};
+//            memset(temp, 0, 17);
+//            sprintf(temp, "Loaded");
+//            printf("%-16s", temp);
+//            memset(temp, 0, 17);
+//            sprintf(temp, "State Timeout");
+//            printf("%-16s", temp);
+//            memset(temp, 0, 17);
+//            sprintf(temp, "No Connect");
+//            printf("%-16s", temp);
+//            memset(temp, 0, 17);
+//            sprintf(temp, "Closed Us");
+//            printf("%-16s", temp);
+//            memset(temp, 0, 17);
+//            sprintf(temp, "Logins Tried");
+//            printf("%-16s", temp);
+//            memset(temp, 0, 17);
+//            sprintf(temp, "B/s");
+//            printf("%-16s", temp);
+//            memset(temp, 0, 17);
+//            sprintf(temp, "Connected");
+//            printf("%-16s", temp);
+//            memset(temp, 0, 17);
+//            sprintf(temp, "Running Threads");
+//            printf("%s", temp);
+//            printf("\n");
+//        }
         printf("\r");
         memset(new, '\0', 16*6);
         sprintf(new, "%s|%-15lu", new, found_srvs);
