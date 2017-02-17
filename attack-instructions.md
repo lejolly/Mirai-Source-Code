@@ -1,7 +1,7 @@
 #Attacks
 `<attack> <targets> <duration in sec> <flags>`
 
-`e.g. udpplain 10.0.0.1 5`
+e.g. `udpplain 10.0.0.1 5`
 
 Targets: Comma delimited list of target prefixes (e.g. 192.168.0.1, 10.0.0.0/8). 
 
