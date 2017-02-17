@@ -78,3 +78,4 @@ We'll need to update the `sources.list` to get `apt-get` working (only applies t
 6. build using [mirai/build.sh](mirai/build.sh)
   * e.g. `mirai/build.sh debug telnet`
   * only the debug, telnet version has been tested
+  * output files will be in the `debug` folder, with `cnc` and `mirai.dbg` (the bot)
