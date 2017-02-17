@@ -26,7 +26,7 @@ We'll need to update the `sources.list` to get `apt-get` working (only applies t
 ###Installation Instructions for Running cnc (assumes you have already built it)
 1. install mysql: `sudo apt-get install mysql-server mysql-client`
   * make sure you set the root password as `root` during the installation
-2. run [scripts/db.sql](scripts/db.sql) on the mysql server
+2. run [scripts/db.sql](scripts/db.sql) in the mysql shell
   ```
   <in the scripts folder>
   mysql -u root -p
