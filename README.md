@@ -6,6 +6,8 @@ How to setup: [setup-instructions.md](setup-instructions.md)
 
 How to attack: [attack-instructions.md](attack-instructions.md)
 
+Scanner and Loader instructions: [scanner-and-loader-instructions.md](scanner-and-loader-instructions.md)
+
 Leaked Linux.Mirai Source Code for Research/IoT Development Purposes
 
 Uploaded for research purposes and so we can develop IoT and such.
