@@ -965,7 +965,7 @@ int main(int argc, char *argv[ ])
 {
     if(argc < 4){
         fprintf(stderr, "Invalid parameters!\n");
-        fprintf(stdout, "Usage: %s <bind ip> <input file> <absolute path to file_to_load> <argument> <threads> <connections> (debug mode)\n", argv[0]);
+        fprintf(stdout, "Usage: %s <bind ip> <input file> <path to file_to_load> <argument> <threads> <connections> (debug mode)\n", argv[0]);
         fprintf(stdout, "Input file: <ip>:<user>:<pass>\n");
         exit(-1);
     }
