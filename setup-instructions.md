@@ -64,7 +64,7 @@ We'll need to update the `sources.list` to get `apt-get` working (only applies t
   sudo apt-get install golang
   ```
 2. run [scripts/cross-compile.sh](scripts/cross-compile.sh) (needs root)
-3. add export paths in `~/.bashrc`
+3. add export paths in `~/.bashrc` (you may need to restart bash after this step)
   ```
   add the following lines:
   
