@@ -1,0 +1,30 @@
+METRICBEAT_CONFIG
+metricbeat.modules:
+- module: system
+  metricsets:
+    - cpu
+    - load
+    - core
+    - diskio
+    - filesystem
+    - fsstat
+    - memory
+    - network
+    - process
+  enabled: true
+  period: 1s
+  processes: ['.*']
+- module: docker
+  metricsets: 
+    - cpu
+    - info
+    - memory
+    - network
+    - diskio
+    - container
+  hosts: unix:///var/run/docker.sock
+  enabled: true
+  period: 1s
+output.elasticsearch:
+  hosts: ['elasticsearch:9200']
+METRICBEAT_CONFIG
